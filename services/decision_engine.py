@@ -41,6 +41,8 @@ from dataclasses import dataclass
 from math import pow
 from typing import Dict, List, Tuple
 
+from utils.config import Settings 
+
 from .rca import RootCauseInsight
 
 
@@ -126,9 +128,8 @@ class DecisionEngine:
     @classmethod
     def from_settings(cls, settings: "Settings") -> "DecisionEngine":
         """Build an engine from application settings."""
-
-        from utils.config import Settings  # local import for type checkers
-
+        
+        # here was the same line mentioned
         if not isinstance(settings, Settings):
             raise TypeError("settings must be a Settings instance")
         return cls(

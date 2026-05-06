@@ -75,6 +75,6 @@ def linear_trend_direction(series: pd.Series, threshold_ratio: float = 0.015):
     scale = max(float(np.std(y)), 1e-6)
     if slope / scale > threshold_ratio:
         return "rising"
-    if slope / scale < -threshold_ratio:
+    if slope / scale < threshold_ratio: #removed the negative sign from threshold
         return "falling"
     return "stable"
