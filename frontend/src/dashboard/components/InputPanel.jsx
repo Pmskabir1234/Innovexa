@@ -63,7 +63,7 @@ function GroupSection({ group, params, onChange }) {
   return (
     <div
       className="rounded-xl overflow-hidden"
-      style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}
+      style={{ border: '1px solid var(--border-subtle)', background: 'var(--surface)' }}
     >
       <button
         onClick={() => setOpen((o) => !o)}
@@ -77,12 +77,12 @@ function GroupSection({ group, params, onChange }) {
         </div>
         <span
           className="text-[11px] font-semibold tracking-wider uppercase flex-1"
-          style={{ color: '#64748b' }}
+          style={{ color: 'var(--text-muted)' }}
         >
           {group.label}
         </span>
         <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={12} style={{ color: '#334155' }} />
+          <ChevronDown size={12} style={{ color: 'var(--text-faint)' }} />
         </motion.div>
       </button>
 
@@ -98,17 +98,17 @@ function GroupSection({ group, params, onChange }) {
           >
             <div
               className="px-3 pb-3 pt-1 space-y-2.5"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+              style={{ borderTop: '1px solid var(--border-subtle)' }}
             >
               {group.fields.map((f) => (
                 <div key={f.key}>
                   <label
                     className="label"
                     htmlFor={f.key}
-                    style={{ color: '#334155' }}
+                    style={{ color: 'var(--text-muted)' }}
                   >
                     {f.label}
-                    <span className="ml-1 normal-case font-normal" style={{ color: '#1e293b' }}>
+                    <span className="ml-1 normal-case font-normal" style={{ color: 'var(--text-faint)' }}>
                       ({f.unit})
                     </span>
                   </label>
@@ -132,17 +132,12 @@ function GroupSection({ group, params, onChange }) {
   )
 }
 
-export function InputPanel({ onParamsChange, machineId, onMachineIdChange }) {
-  const [params, setParams] = useState(DEFAULT_PARAMS)
-
+export function InputPanel({ params, onParamsChange, machineId, onMachineIdChange }) {
   function handleChange(key, value) {
-    const next = { ...params, [key]: value }
-    setParams(next)
-    onParamsChange(next)
+    onParamsChange({ ...params, [key]: value })
   }
 
   function handleReset() {
-    setParams(DEFAULT_PARAMS)
     onParamsChange(DEFAULT_PARAMS)
   }
 
@@ -150,7 +145,7 @@ export function InputPanel({ onParamsChange, machineId, onMachineIdChange }) {
     <div className="space-y-3">
       {/* Machine ID */}
       <div>
-        <label className="label" htmlFor="machine-id">Machine ID</label>
+        <label className="label" htmlFor="machine-id" style={{ color: 'var(--text-muted)' }}>Machine ID</label>
         <input
           id="machine-id"
           type="text"
@@ -173,7 +168,7 @@ export function InputPanel({ onParamsChange, machineId, onMachineIdChange }) {
       <button
         onClick={handleReset}
         className="btn-ghost w-full justify-center gap-1.5 text-[11px]"
-        style={{ color: '#334155' }}
+        style={{ color: 'var(--text-faint)' }}
       >
         <RotateCcw size={11} />
         Reset to defaults

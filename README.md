@@ -92,6 +92,22 @@ What-if requests reuse the same `readings` array plus a `deltas` map, for exampl
 
 POST that JSON to `http://127.0.0.1:8000/whatif`.
 
+## Run the React Frontend (Landing Page + Dashboard)
+
+The frontend is a unified React application built with Vite and Tailwind CSS v4. It includes both the marketing landing page and the analysis dashboard.
+
+In a third terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`.
+- Landing Page: `/`
+- Dashboard: `/dashboard`
+
 ## Project layout
 
 - `data/` — synthetic generator and CSV helpers  

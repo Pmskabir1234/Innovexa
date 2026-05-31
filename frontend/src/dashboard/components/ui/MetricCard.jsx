@@ -8,7 +8,7 @@ const ACCENT_STYLES = {
   red:     { icon: 'rgba(239,68,68,0.12)',   text: '#f87171',  border: 'rgba(239,68,68,0.15)'   },
   amber:   { icon: 'rgba(245,158,11,0.12)',  text: '#fbbf24',  border: 'rgba(245,158,11,0.15)'  },
   purple:  { icon: 'rgba(168,85,247,0.12)',  text: '#c084fc',  border: 'rgba(168,85,247,0.15)'  },
-  default: { icon: 'rgba(255,255,255,0.05)', text: '#64748b',  border: 'rgba(255,255,255,0.06)' },
+  default: { icon: 'var(--border-subtle)', text: 'var(--text-muted)',  border: 'var(--border-subtle)' },
 }
 
 export function MetricCard({ label, value, sub, accent, icon: Icon, className, delay = 0 }) {
@@ -24,13 +24,15 @@ export function MetricCard({ label, value, sub, accent, icon: Icon, className, d
       style={{ borderColor: style.border }}
     >
       {/* Subtle top gradient line */}
-      <div
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: `linear-gradient(90deg, transparent, ${style.text}30, transparent)` }}
-      />
+      {accent && (
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, ${style.text}30, transparent)` }}
+        />
+      )}
 
       <div className="flex items-center justify-between">
-        <span className="label">{label}</span>
+        <span className="label" style={{ color: 'var(--text-muted)' }}>{label}</span>
         {Icon && (
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -43,13 +45,13 @@ export function MetricCard({ label, value, sub, accent, icon: Icon, className, d
 
       <span
         className="text-xl font-bold leading-tight tracking-tight"
-        style={{ color: '#f1f5f9' }}
+        style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}
       >
         {value}
       </span>
 
       {sub && (
-        <span className="text-[11px]" style={{ color: '#475569' }}>{sub}</span>
+        <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{sub}</span>
       )}
     </motion.div>
   )

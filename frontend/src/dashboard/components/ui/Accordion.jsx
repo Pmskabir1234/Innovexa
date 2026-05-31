@@ -9,14 +9,14 @@ export function Accordion({ title, children, defaultOpen = false }) {
     <div
       className="overflow-hidden rounded-xl"
       style={{
-        border: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(13,21,38,0.6)',
+        border: '1px solid var(--border-subtle)',
+        background: 'var(--surface)',
       }}
     >
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors"
-        style={{ color: open ? '#94a3b8' : '#64748b' }}
+        style={{ color: open ? 'var(--text-secondary)' : 'var(--text-muted)' }}
         aria-expanded={open}
       >
         <span className="text-xs font-semibold tracking-wider uppercase">{title}</span>
@@ -37,7 +37,7 @@ export function Accordion({ title, children, defaultOpen = false }) {
           >
             <div
               className="px-4 pb-4 pt-1"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+              style={{ borderTop: '1px solid var(--border-subtle)' }}
             >
               {children}
             </div>

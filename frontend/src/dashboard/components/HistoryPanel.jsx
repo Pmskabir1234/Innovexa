@@ -12,7 +12,7 @@ function RiskBar({ pct, risk }) {
   const cfg = RISK_CFG[risk] || RISK_CFG.Low
   return (
     <div className="flex items-center gap-2 flex-1 min-w-[80px]">
-      <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
+      <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--border-subtle)' }}>
         <motion.div
           className="h-full rounded-full"
           style={{ background: cfg.color, boxShadow: `0 0 4px ${cfg.color}60` }}
@@ -38,13 +38,13 @@ export function HistoryPanel({ items }) {
       >
         <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.15)' }}
+          style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary-border)' }}
         >
-          <Database size={20} style={{ color: '#22d3ee' }} />
+          <Database size={20} style={{ color: 'var(--color-primary)' }} />
         </div>
         <div>
-          <p className="text-sm font-medium" style={{ color: '#475569' }}>No history records</p>
-          <p className="text-xs mt-1" style={{ color: '#334155' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>No history records</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
             Run an analysis to start building history
           </p>
         </div>
@@ -62,18 +62,18 @@ export function HistoryPanel({ items }) {
       {/* Header */}
       <div
         className="px-5 py-4 flex items-center gap-2.5"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div
           className="w-6 h-6 rounded-lg flex items-center justify-center"
-          style={{ background: 'rgba(6,182,212,0.12)' }}
+          style={{ background: 'var(--color-primary-dim)' }}
         >
-          <Clock size={12} style={{ color: '#22d3ee' }} />
+          <Clock size={12} style={{ color: 'var(--color-primary)' }} />
         </div>
-        <span className="section-title">Recent Analysis History</span>
+        <span className="section-title" style={{ color: 'var(--text-muted)' }}>Recent Analysis History</span>
         <span
           className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(6,182,212,0.1)', color: '#22d3ee' }}
+          style={{ background: 'var(--color-primary-dim)', color: 'var(--color-primary)' }}
         >
           {items.length}
         </span>
@@ -93,14 +93,14 @@ export function HistoryPanel({ items }) {
               transition={{ delay: i * 0.04, duration: 0.3 }}
               className="px-5 py-3.5 flex flex-wrap items-center gap-3 transition-colors"
               style={{
-                borderBottom: i < items.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none',
+                borderBottom: i < items.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               }}
-              whileHover={{ background: 'rgba(255,255,255,0.02)' }}
+              whileHover={{ background: 'var(--input-bg)' }}
             >
               {/* Timestamp */}
               <div className="flex items-center gap-1.5 min-w-[150px]">
-                <Clock size={11} style={{ color: '#334155' }} />
-                <span className="text-[11px] font-mono" style={{ color: '#475569' }}>
+                <Clock size={11} style={{ color: 'var(--text-faint)' }} />
+                <span className="text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
                   {item.created_at ? new Date(item.created_at).toLocaleString() : 'n/a'}
                 </span>
               </div>
@@ -118,7 +118,7 @@ export function HistoryPanel({ items }) {
 
               {/* Machine ID */}
               {item.machine_id && (
-                <span className="text-[11px] font-mono" style={{ color: '#334155' }}>
+                <span className="text-[11px] font-mono" style={{ color: 'var(--text-faint)' }}>
                   {item.machine_id}
                 </span>
               )}

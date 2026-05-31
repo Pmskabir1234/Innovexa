@@ -55,7 +55,7 @@ export function StatusBanner({ risk, priority }) {
       style={{
         background: cfg.bg,
         border: `1px solid ${cfg.border}`,
-        boxShadow: `0 0 40px ${cfg.glow}, 0 4px 20px rgba(0,0,0,0.3)`,
+        boxShadow: `0 0 40px ${cfg.glow}, 0 4px 20px var(--bg)`,
       }}
     >
       {/* Animated glow for critical */}

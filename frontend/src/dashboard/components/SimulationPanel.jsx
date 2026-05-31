@@ -55,13 +55,13 @@ export function SimulationPanel({ params, machineId, onSimulate, loading, result
       <div className="flex items-center gap-3">
         <div
           className="w-8 h-8 rounded-xl flex items-center justify-center"
-          style={{ background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.2)' }}
+          style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary-border)' }}
         >
-          <FlaskConical size={15} style={{ color: '#22d3ee' }} />
+          <FlaskConical size={15} style={{ color: 'var(--color-primary)' }} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold" style={{ color: '#e2e8f0' }}>What-if Simulation</h3>
-          <p className="text-[11px]" style={{ color: '#475569' }}>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">What-if Simulation</h3>
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
             Adjust parameters to model failure scenarios
           </p>
         </div>
@@ -74,7 +74,7 @@ export function SimulationPanel({ params, machineId, onSimulate, loading, result
           return (
             <div key={s.key} className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="label" style={{ color: '#334155' }}>{s.label}</label>
+                <label className="label" style={{ color: 'var(--text-muted)' }}>{s.label}</label>
                 <span
                   className="text-xs font-mono font-semibold px-2 py-0.5 rounded-md"
                   style={{ background: `${s.accent}15`, color: s.accent }}
@@ -89,12 +89,12 @@ export function SimulationPanel({ params, machineId, onSimulate, loading, result
                   max={s.max}
                   step={1}
                   value={deltas[s.key]}
-                  onChange={(e) => setDeltas((d) => ({ ...d, [s.key]: parseFloat(e.target.value) }))}
+                  onChange={(e) => setDeltas((d) => ({ ...d, [s.key]: parseFloat(e.target.value) || 0 }))}
                   className="w-full"
                   style={{ accentColor: s.accent }}
                 />
               </div>
-              <div className="flex justify-between text-[10px]" style={{ color: '#1e293b' }}>
+              <div className="flex justify-between text-[10px]" style={{ color: 'var(--text-faint)' }}>
                 <span>{s.min}</span>
                 <span>0</span>
                 <span>{s.max}</span>
@@ -119,25 +119,25 @@ export function SimulationPanel({ params, machineId, onSimulate, loading, result
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="rounded-xl p-4 space-y-3"
             style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--surface)',
+              border: '1px solid var(--border-subtle)',
             }}
           >
             {/* Before → After */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-[11px]" style={{ color: '#475569' }}>Base</span>
-                <span className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Base</span>
+                <span className="text-sm font-bold text-[var(--text-primary)]">
                   {result.base_failure_probability_percent?.toFixed(2)}%
                 </span>
                 <RiskBadge risk={result.base_risk} />
               </div>
 
-              <ArrowRight size={14} style={{ color: '#334155' }} />
+              <ArrowRight size={14} style={{ color: 'var(--text-faint)' }} />
 
               <div className="flex items-center gap-2">
-                <span className="text-[11px]" style={{ color: '#475569' }}>Simulated</span>
-                <span className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Simulated</span>
+                <span className="text-sm font-bold text-[var(--text-primary)]">
                   {result.simulated_failure_probability_percent?.toFixed(2)}%
                 </span>
                 <RiskBadge risk={result.simulated_risk} />
@@ -159,13 +159,13 @@ export function SimulationPanel({ params, machineId, onSimulate, loading, result
                 >
                   {delta > 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(2)}pp
                 </span>
-                <span className="text-xs" style={{ color: '#475569' }}>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   {delta > 0 ? 'increase' : 'decrease'} in failure risk
                 </span>
               </div>
             )}
 
-            <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               {result.impact_summary}
             </p>
           </motion.div>

@@ -14,7 +14,10 @@ const stagger = {
   },
 }
 
-const BAR_COLORS = ['#06b6d4', '#0891b2', '#0e7490', '#155e75', '#22d3ee', '#67e8f9']
+const BAR_COLORS = [
+  'var(--color-primary)', 'hsl(119,99%,40%)', 'hsl(119,99%,35%)', 'hsl(119,99%,30%)',
+  'hsl(119,99%,50%)', 'hsl(119,99%,60%)', 'hsl(119,99%,70%)', 'hsl(119,99%,80%)',
+]
 
 export function PredictResult({ data }) {
   if (!data) return null
@@ -65,24 +68,24 @@ export function PredictResult({ data }) {
       {chartData.length > 0 && (
         <motion.div variants={stagger.item} className="card p-5">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: 'rgba(6,182,212,0.12)' }}>
-              <Zap size={12} style={{ color: '#22d3ee' }} />
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-dim)' }}>
+              <Zap size={12} style={{ color: 'var(--color-primary)' }} />
             </div>
-            <span className="section-title">Top Contributing Factors</span>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.04)' }} />
+            <span className="section-title" style={{ color: 'var(--text-muted)' }}>Top Contributing Factors</span>
+            <div className="flex-1 h-px" style={{ background: 'var(--border-subtle)' }} />
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} layout="vertical" margin={{ left: 4, right: 20, top: 4, bottom: 4 }}>
-              <XAxis type="number" tick={{ fontSize: 10, fill: '#334155' }} tickLine={false} axisLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={140} tickLine={false} axisLine={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-faint)' }} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} width={140} tickLine={false} axisLine={false} />
               <Tooltip
-                cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                cursor={{ fill: 'var(--border-subtle)' }}
                 contentStyle={{
-                  background: 'rgba(10,15,30,0.95)',
-                  border: '1px solid rgba(6,182,212,0.2)',
+                  background: 'var(--surface-elevated)',
+                  border: '1px solid var(--border-accent)',
                   borderRadius: '0.75rem',
                   fontSize: 12,
-                  color: '#94a3b8',
+                  color: 'var(--text-secondary)',
                 }}
                 formatter={(v) => [v.toFixed(4), 'Importance']}
               />
@@ -91,7 +94,7 @@ export function PredictResult({ data }) {
                   <Cell
                     key={i}
                     fill={BAR_COLORS[i % BAR_COLORS.length]}
-                    style={{ filter: `drop-shadow(0 0 4px ${BAR_COLORS[i % BAR_COLORS.length]}60)` }}
+                    style={{ filter: `drop-shadow(0 0 4px color-mix(in srgb, ${BAR_COLORS[i % BAR_COLORS.length]}, transparent 60%))` }}
                   />
                 ))}
               </Bar>

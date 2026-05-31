@@ -1,4 +1,5 @@
 import React, { Suspense } from "react"
+import { Link } from "react-router-dom"
 
 // Lazy load the Spline 3D component to optimize the initial page load speed.
 const Spline = React.lazy(() => import("@splinetool/react-spline"))
@@ -51,19 +52,21 @@ export default function HeroSection() {
           className="opacity-0 animate-fade-up flex flex-wrap gap-3 font-bold pointer-events-auto"
           style={{ animationDelay: "0.7s" }}
         >
-          <button 
-            className="bg-primary text-primary-foreground px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-semibold rounded-sm cursor-pointer hover:brightness-110 active:scale-[0.97] transition-all duration-200 outline-none"
-            onClick={() => window.open("http://localhost:3001", "_blank")}
+          <Link 
+            to="/dashboard"
+            className="bg-primary text-primary-foreground px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-semibold rounded-sm cursor-pointer hover:brightness-110 active:scale-[0.97] transition-all duration-200 outline-none inline-block text-center"
           >
             Demo
-          </button>
+          </Link>
           
-          <button 
-            className="bg-white text-background px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-semibold rounded-sm cursor-pointer hover:brightness-90 active:scale-[0.97] transition-all duration-200 outline-none"
-            onClick={() => window.open("https://github.com/Pmskabir1234/CoreInsight", "_blank")}
+          <a 
+            href="https://github.com/Pmskabir1234/CoreInsight"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-background px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-semibold rounded-sm cursor-pointer hover:brightness-90 active:scale-[0.97] transition-all duration-200 outline-none inline-block text-center"
           >
             Github
-          </button>
+          </a>
         </div>
 
         {/* Trust/Metadata line: Delay 0.85s */}

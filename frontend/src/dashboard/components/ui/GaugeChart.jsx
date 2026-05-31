@@ -96,7 +96,7 @@ export function GaugeChart({ value = 0, title, size = 180, variant = 'health' })
             style={{
               fontSize: size * 0.2,
               fontWeight: 700,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--font-heading)',
               fill: colors.text,
               filter: `drop-shadow(0 0 8px ${colors.glow})`,
             }}
@@ -106,7 +106,7 @@ export function GaugeChart({ value = 0, title, size = 180, variant = 'health' })
           <text
             x={cx} y={cy + size * 0.1}
             textAnchor="middle"
-            style={{ fontSize: size * 0.075, fill: '#475569', fontFamily: 'Inter, sans-serif' }}
+            style={{ fontSize: size * 0.075, fill: 'var(--text-muted)', fontFamily: 'var(--font-heading)' }}
           >
             / 100
           </text>
@@ -114,7 +114,7 @@ export function GaugeChart({ value = 0, title, size = 180, variant = 'health' })
       </div>
       <span
         className="text-xs font-semibold tracking-wider uppercase"
-        style={{ color: '#475569' }}
+        style={{ color: 'var(--text-muted)' }}
       >
         {title}
       </span>

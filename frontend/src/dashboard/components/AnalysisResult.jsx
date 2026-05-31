@@ -36,24 +36,24 @@ const TREND_CFG = {
 }
 
 /* ── sub-components ── */
-function SectionHeader({ icon: Icon, title, accent = '#06b6d4' }) {
+function SectionHeader({ icon: Icon, title, accent = 'var(--color-primary)' }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
       <div
         className="w-6 h-6 rounded-lg flex items-center justify-center"
-        style={{ background: `${accent}15` }}
+        style={{ background: `color-mix(in srgb, ${accent}, transparent 85%)` }}
       >
         <Icon size={12} style={{ color: accent }} />
       </div>
-      <span className="section-title" style={{ color: '#475569' }}>{title}</span>
-      <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.04)' }} />
+      <span className="section-title" style={{ color: 'var(--text-muted)' }}>{title}</span>
+      <div className="flex-1 h-px" style={{ background: 'var(--border-subtle)' }} />
     </div>
   )
 }
 
 function DiagnosticsGrid({ diagnostics }) {
   if (!diagnostics?.length) return (
-    <p className="text-sm" style={{ color: '#334155' }}>No diagnostics available.</p>
+    <p className="text-sm" style={{ color: 'var(--text-faint)' }}>No diagnostics available.</p>
   )
 
   return (
@@ -75,7 +75,7 @@ function DiagnosticsGrid({ diagnostics }) {
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold" style={{ color: '#94a3b8' }}>
+              <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
                 {d.parameter}
               </span>
               <span
@@ -93,7 +93,7 @@ function DiagnosticsGrid({ diagnostics }) {
             {/* Progress bar */}
             <div
               className="h-1 rounded-full overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
+              style={{ background: 'var(--border-subtle)' }}
             >
               <motion.div
                 className="h-full rounded-full"
@@ -105,7 +105,7 @@ function DiagnosticsGrid({ diagnostics }) {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-[11px]" style={{ color: '#334155' }}>
+              <span className="text-[11px]" style={{ color: 'var(--text-faint)' }}>
                 {d.actual_value?.toFixed(2)} (safe: {d.safe_min}–{d.safe_max})
               </span>
               <span className="text-[11px] font-mono" style={{ color: cfg.text }}>
@@ -114,7 +114,7 @@ function DiagnosticsGrid({ diagnostics }) {
             </div>
 
             {d.explanation && (
-              <p className="text-[11px] leading-relaxed" style={{ color: '#475569' }}>
+              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                 {d.explanation}
               </p>
             )}
@@ -127,7 +127,7 @@ function DiagnosticsGrid({ diagnostics }) {
 
 function FeatureImportanceChart({ importance }) {
   if (!importance?.length) return (
-    <p className="text-sm" style={{ color: '#334155' }}>Not available.</p>
+    <p className="text-sm" style={{ color: 'var(--text-faint)' }}>Not available.</p>
   )
 
   const data = importance.slice(0, 8).map((f) => ({
@@ -136,8 +136,8 @@ function FeatureImportanceChart({ importance }) {
   }))
 
   const BAR_COLORS = [
-    '#06b6d4', '#0891b2', '#0e7490', '#155e75',
-    '#22d3ee', '#67e8f9', '#a5f3fc', '#cffafe',
+    'var(--color-primary)', 'hsl(119,99%,40%)', 'hsl(119,99%,35%)', 'hsl(119,99%,30%)',
+    'hsl(119,99%,50%)', 'hsl(119,99%,60%)', 'hsl(119,99%,70%)', 'hsl(119,99%,80%)',
   ]
 
   return (
@@ -145,26 +145,26 @@ function FeatureImportanceChart({ importance }) {
       <BarChart data={data} layout="vertical" margin={{ left: 4, right: 20, top: 4, bottom: 4 }}>
         <XAxis
           type="number"
-          tick={{ fontSize: 10, fill: '#334155' }}
+          tick={{ fontSize: 10, fill: 'var(--text-faint)' }}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
           type="category"
           dataKey="name"
-          tick={{ fontSize: 11, fill: '#475569' }}
+          tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
           width={140}
           tickLine={false}
           axisLine={false}
         />
         <Tooltip
-          cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+          cursor={{ fill: 'var(--border-subtle)' }}
           contentStyle={{
-            background: 'rgba(10,15,30,0.95)',
-            border: '1px solid rgba(6,182,212,0.2)',
+            background: 'var(--surface-elevated)',
+            border: '1px solid var(--border-accent)',
             borderRadius: '0.75rem',
             fontSize: 12,
-            color: '#94a3b8',
+            color: 'var(--text-secondary)',
           }}
           formatter={(v) => [v.toFixed(4), 'Importance']}
         />
@@ -173,7 +173,7 @@ function FeatureImportanceChart({ importance }) {
             <Cell
               key={i}
               fill={BAR_COLORS[i % BAR_COLORS.length]}
-              style={{ filter: `drop-shadow(0 0 4px ${BAR_COLORS[i % BAR_COLORS.length]}60)` }}
+              style={{ filter: `drop-shadow(0 0 4px color-mix(in srgb, ${BAR_COLORS[i % BAR_COLORS.length]}, transparent 60%))` }}
             />
           ))}
         </Bar>
@@ -192,8 +192,8 @@ function TrendInsightRow({ t, i }) {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: i * 0.05, duration: 0.3 }}
       className="flex items-start gap-3 p-3 rounded-xl transition-colors"
-      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
-      whileHover={{ background: 'rgba(255,255,255,0.04)' }}
+      style={{ background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}
+      whileHover={{ background: 'var(--border-subtle)' }}
     >
       <div
         className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
@@ -203,7 +203,7 @@ function TrendInsightRow({ t, i }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold" style={{ color: '#94a3b8' }}>{t.metric}</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{t.metric}</span>
           <span
             className="badge"
             style={{ background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}25` }}
@@ -211,7 +211,7 @@ function TrendInsightRow({ t, i }) {
             {cfg.label}
           </span>
         </div>
-        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#475569' }}>{t.detail}</p>
+        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{t.detail}</p>
       </div>
     </motion.div>
   )
@@ -298,7 +298,7 @@ export function AnalysisResult({ data }) {
 
       {/* Diagnostics */}
       <motion.div variants={stagger.item} className="card p-5">
-        <SectionHeader icon={Activity} title="Parameter Diagnostics" accent="#22d3ee" />
+        <SectionHeader icon={Activity} title="Parameter Diagnostics" accent="var(--color-primary)" />
         <DiagnosticsGrid diagnostics={parameter_diagnostics} />
       </motion.div>
 
@@ -326,35 +326,35 @@ export function AnalysisResult({ data }) {
           variants={stagger.item}
           className="rounded-xl p-4 flex items-start gap-3"
           style={{
-            background: 'rgba(6,182,212,0.05)',
-            border: '1px solid rgba(6,182,212,0.15)',
-            borderLeft: '3px solid #06b6d4',
+            background: 'var(--color-primary-dim)',
+            border: '1px solid var(--color-primary-border)',
+            borderLeft: '3px solid var(--color-primary)',
           }}
         >
-          <Clock size={14} className="mt-0.5 shrink-0" style={{ color: '#22d3ee' }} />
-          <p className="text-sm leading-relaxed" style={{ color: '#94a3b8' }}>{comparison_note}</p>
+          <Clock size={14} className="mt-0.5 shrink-0" style={{ color: 'var(--color-primary)' }} />
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{comparison_note}</p>
         </motion.div>
       )}
 
       {/* Visualizations */}
       {visuals.length > 0 && (
         <motion.div variants={stagger.item} className="card p-5">
-          <SectionHeader icon={BarChart2} title="Generated Visualizations" accent="#06b6d4" />
+          <SectionHeader icon={BarChart2} title="Generated Visualizations" accent="var(--color-primary)" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {visuals.slice(0, 3).map((v, i) => (
               <motion.div
                 key={i}
                 className="rounded-xl overflow-hidden"
-                style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ border: '1px solid var(--border-subtle)' }}
                 whileHover={{ scale: 1.01 }}
                 transition={{ duration: 0.2 }}
               >
                 <div
                   className="px-3 py-2 text-[11px] font-medium"
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    color: '#475569',
+                    background: 'var(--input-bg)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   {v.title || v.metric || `Chart ${i + 1}`}
@@ -375,7 +375,7 @@ export function AnalysisResult({ data }) {
         <SectionHeader icon={Brain} title="AI Engineering Report" accent="#c084fc" />
         <div
           className="text-sm leading-relaxed whitespace-pre-wrap"
-          style={{ color: '#64748b', fontFamily: 'var(--font-sans)' }}
+          style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)' }}
         >
           {engineering_report || 'No report available.'}
         </div>
@@ -387,8 +387,8 @@ export function AnalysisResult({ data }) {
           <Accordion title="Root Cause Analysis">
             <ul className="space-y-2 pt-1">
               {rootCause.map((line, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#64748b' }}>
-                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: '#06b6d4' }} />
+                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--color-primary)' }} />
                   {line}
                 </li>
               ))}
@@ -399,8 +399,8 @@ export function AnalysisResult({ data }) {
           <Accordion title="Historical Comparison">
             <ul className="space-y-2 pt-1">
               {historicalComparison.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#64748b' }}>
-                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: '#06b6d4' }} />
+                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--color-primary)' }} />
                   {item.detail || JSON.stringify(item)}
                 </li>
               ))}
