@@ -15,25 +15,76 @@ class SensorReading(BaseModel):
     motor_current_a: float
     vibration_rms: float
     bearing_temp_c: float
-    inlet_pressure_bar: float
+    inlet_pressure_bar: float = Field(..., alias="pressure_bar")
     flow_rate_l_min: float
-    valve_position_pct: float
+    valve_position_pct: float = Field(default=50.0)  # Make optional with default
     ambient_temp_c: Optional[float] = None
     humidity_percent: Optional[float] = None
     rpm: Optional[float] = None
     voltage_v: Optional[float] = None
     torque_nm: Optional[float] = None
 
+    model_config = {"populate_by_name": True}
+
 
 class SensorWindowRequest(BaseModel):
     """Batch of readings forming a temporal context window."""
 
-    asset_id: Optional[str] = Field(default=None, description="Optional asset tag for logging")
+    asset_id: Optional[str] = Field(
+        default=None, alias="machine_id", description="Optional asset tag for logging"
+    )
     readings: List[SensorReading] = Field(
         ...,
-        min_length=64,
-        description="At least 64 samples are required for context features",
+        min_length=1,
+        description="At least 1 sample is required. Windows < 64 will be inflated.",
     )
+
+    model_config = {"populate_by_name": True}
+
+
+class InferenceRequest(BaseModel):
+    """Simple wrapper for frontend single-point calls."""
+
+    asset_id: str = Field(..., alias="machine_id")
+    parameters: SensorReading
+
+    model_config = {"populate_by_name": True}
+
+
+class HistoryItem(BaseModel):
+    """A record of a past decision/analysis."""
+
+    logged_at_utc: datetime
+    machine_id: str
+    risk_category: str
+    failure_probability_percent: float
+    created_at: datetime
+
+
+class HistoryResponse(BaseModel):
+    """List of history items."""
+
+    items: List[HistoryItem]
+
+
+class SimulationRequest(BaseModel):
+    """Payload for what-if simulation from the frontend."""
+
+    asset_id: str = Field(..., alias="machine_id")
+    base_parameters: SensorReading
+    overrides: SensorReading
+
+    model_config = {"populate_by_name": True}
+
+
+class SimulationResponse(BaseModel):
+    """Results of a what-if simulation."""
+
+    base_failure_probability_percent: float
+    base_risk: str
+    simulated_failure_probability_percent: float
+    simulated_risk: str
+    impact_summary: str
 
 
 class PredictionResponse(BaseModel):

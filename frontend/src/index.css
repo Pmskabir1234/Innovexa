@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 96%;
+    
+    --primary: 119 99% 46%;
+    --primary-foreground: 0 0% 4%;
+    
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 96%;
+    
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 60%;
+    
+    --accent: 119 99% 46%;
+    --accent-foreground: 0 0% 4%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 96%;
+    
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 119 99% 46%;
+    
+    --radius: 0.5rem;
+    
+    --nav-button: 0 0% 18%;
+    --hero-bg: 0 0% 8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sora antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Custom styles for animations & layout if needed */
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+.animate-delay-550 {
+  animation-delay: 0.55s;
+}
+.animate-delay-700 {
+  animation-delay: 0.7s;
+}
+.animate-delay-850 {
+  animation-delay: 0.85s;
+}

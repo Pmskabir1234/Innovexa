@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-brand-50:  #ecfeff;
+  --color-brand-100: #cffafe;
+  --color-brand-200: #a5f3fc;
+  --color-brand-300: #67e8f9;
+  --color-brand-400: #22d3ee;
+  --color-brand-500: #06b6d4;
+  --color-brand-600: #0891b2;
+  --color-brand-700: #0e7490;
+  --color-brand-800: #155e75;
+  --color-brand-900: #164e63;
+  --color-surface-950: #020817;
+  --color-surface-900: #0a0f1e;
+  --color-surface-800: #0d1526;
+  --color-surface-700: #111827;
+  --color-surface-600: #1a2235;
+  --color-surface-500: #1e2d45;
+  --color-surface-400: #243352;
+  --color-success:  #10b981;
+  --color-warning:  #f59e0b;
+  --color-danger:   #ef4444;
+  --color-critical: #dc2626;
+  --animate-fade-in:    fadeIn 0.35s ease-out both;
+  --animate-slide-up:   slideUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-slide-in-r: slideInRight 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-scale-in:   scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4,0,0.6,1) infinite;
+  --animate-glow:       glow 2s ease-in-out infinite alternate;
+  --animate-shimmer:    shimmer 1.8s linear infinite;
+  --animate-spin-slow:  spin 3s linear infinite;
+}
+
+@keyframes fadeIn    { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp   { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+@keyframes slideInRight { from { opacity:0; transform:translateX(20px) } to { opacity:1; transform:translateX(0) } }
+@keyframes scaleIn   { from { opacity:0; transform:scale(0.95) } to { opacity:1; transform:scale(1) } }
+@keyframes glow      { from { box-shadow:0 0 8px 0 currentColor } to { box-shadow:0 0 20px 4px currentColor } }
+@keyframes shimmer   { 0% { background-position:-200% 0 } 100% { background-position:200% 0 } }
+
+:root {
+  --scrollbar-thumb: #1e3a5f;
+  --scrollbar-track: #020817;
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+*::-webkit-scrollbar { width:5px; height:5px }
+*::-webkit-scrollbar-track { background:var(--scrollbar-track) }
+*::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb); border-radius:3px }
+
+body {
+  font-family: var(--font-sans);
+  background: #020817;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(13,21,38,0.7);
+  backdrop-filter: blur(12px);
+}
+
+.card-elevated {
+  border-radius: 1.25rem;
+  border: 1px solid rgba(6,182,212,0.12);
+  background: rgba(10,15,30,0.85);
+  backdrop-filter: blur(16px);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.125rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.625rem;
+  color: #64748b;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.4375rem 0.75rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  color: #e2e8f0;
+  outline: none;
+}
+
+.label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: rgba(10,15,30,0.95) !important;
+  border: 1px solid rgba(6,182,212,0.2) !important;
+  border-radius: 0.75rem !important;
+}
