@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Union
 import logging
 import json
@@ -69,11 +70,22 @@ def predict(
 
     df = _prepare_dataframe(payload)
     bundle = assistant.predict_window(df)
+    
+    # Calculate feature importance for frontend
+    explain_body = assistant.explain(df)
+    feature_importance = [
+        {"name": f["feature"], "value": f["importance"], "importance": f["importance"]}
+        for f in explain_body.get("top_failure_features", [])
+    ]
+    
     return PredictionResponse(
         failure_probability=bundle.failure_probability,
         anomaly_score=bundle.anomaly_score,
         anomaly_flag=bundle.anomaly_flag,
         isolation_label=bundle.isolation_label,
+        failure_probability_percent=bundle.failure_probability * 100,
+        risk_category="Critical" if bundle.failure_probability > 0.7 else "High" if bundle.failure_probability > 0.4 else "Medium" if bundle.failure_probability > 0.15 else "Low",
+        feature_importance=feature_importance
     )
 
 
@@ -101,6 +113,59 @@ def analyze(
         "failure_probability_percent": preds.failure_probability * 100,
         "created_at": pd.Timestamp.now().isoformat()
     })
+
+    # Frontend compatibility mapping
+    fp_pct = preds.failure_probability * 100
+    risk = ux["alert_severity"].capitalize()
+    if preds.failure_probability > 0.7 and risk != "Critical":
+        risk = "Critical"
+
+    parameter_diagnostics = []
+    for card in cards:
+        mid = (card.normal_min + card.normal_max) / 2
+        dev = abs(card.current_value - mid) / (mid or 1.0) * 100
+        parameter_diagnostics.append({
+            "parameter": card.label,
+            "status": card.status.capitalize(),
+            "actual_value": card.current_value,
+            "safe_max": card.normal_max,
+            "deviation_percent": dev,
+            "explanation": card.explanation
+        })
+
+    feature_importance = []
+    for f in ux["ranked_influencing_factors"]:
+        match = re.search(r"importance ([\d\.]+)", f.get("detail", ""))
+        val = float(match.group(1)) if match else 0.05
+        feature_importance.append({
+            "name": f["feature"],
+            "value": val,
+            "importance": val
+        })
+
+    trend_insights = []
+    for note in ux["trend_notes"]:
+        trend = "Rising" if "rising" in note.lower() else "Falling" if "falling" in note.lower() else "Stable"
+        metric = note.split(" has ")[0]
+        trend_insights.append({
+            "metric": metric,
+            "trend": trend,
+            "detail": note
+        })
+
+    structured_analysis = {
+        "visualizations": [
+            {
+                "title": "System Telemetry Overview",
+                "image_base64": ux["chart_image_png_base64"]
+            }
+        ] if ux["chart_image_png_base64"] else [],
+        "root_cause_analysis": [
+            f"Hypothesis: {rca.primary_hypothesis}",
+            f"Confidence: {rca.confidence:.1%}"
+        ] + rca.evidence,
+        "historical_comparison": []
+    }
 
     return AnalyzeResponse(
         prediction=PredictionResponse(
@@ -131,6 +196,19 @@ def analyze(
         trend_notes=ux["trend_notes"],
         ranked_influencing_factors=ux["ranked_influencing_factors"],
         chart_image_png_base64=ux["chart_image_png_base64"],
+        
+        # Frontend compatibility fields
+        failure_probability_percent=fp_pct,
+        anomaly_score=preds.anomaly_score,
+        decision_priority=risk,
+        risk_category=risk,
+        health_score=max(0, 100 - fp_pct),
+        parameter_diagnostics=parameter_diagnostics,
+        feature_importance=feature_importance,
+        trend_insights=trend_insights,
+        comparison_note=ux["engineering_memory_note"],
+        engineering_report=ux["human_readable_summary"],
+        structured_analysis=structured_analysis
     )
 
 
@@ -184,13 +262,13 @@ def simulate(
     
     delta = (over_preds.failure_probability - base_preds.failure_probability) * 100
     summary = f"Adjusting parameters leads to a {abs(delta):.1f}pp {'increase' if delta > 0 else 'decrease'} in failure probability. "
-    summary += f"The system risk level shifts from {base_decision.risk_level} to {over_decision.risk_level}."
+    summary += f"The system risk level shifts from {base_decision.risk_level.capitalize()} to {over_decision.risk_level.capitalize()}."
 
     return SimulationResponse(
         base_failure_probability_percent=base_preds.failure_probability * 100,
-        base_risk=base_decision.risk_level,
+        base_risk=base_decision.risk_level.capitalize(),
         simulated_failure_probability_percent=over_preds.failure_probability * 100,
-        simulated_risk=over_decision.risk_level,
+        simulated_risk=over_decision.risk_level.capitalize(),
         impact_summary=summary
     )
 
@@ -219,7 +297,7 @@ def decision(
     assistant.log_decision(log_payload)
     return DecisionResponse(
         action=result.action,
-        risk_level=result.risk_level,
+        risk_level=result.risk_level.capitalize(),
         risk_score=result.risk_score,
         confidence=result.confidence,
         confidence_breakdown=result.confidence_breakdown,

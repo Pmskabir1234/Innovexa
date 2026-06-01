@@ -95,6 +95,11 @@ class PredictionResponse(BaseModel):
     anomaly_flag: bool
     isolation_label: int
 
+    # Frontend-centric fields
+    failure_probability_percent: Optional[float] = None
+    risk_category: Optional[str] = None
+    feature_importance: Optional[List[Dict[str, Any]]] = None
+
 
 class RCAEvidence(BaseModel):
     """Narrative and quantitative RCA payload."""
@@ -124,6 +129,7 @@ class ParameterStatusCard(BaseModel):
 class AnalyzeResponse(BaseModel):
     """ML artifacts plus human-centric summaries and visualization."""
 
+    # Backend-centric fields
     prediction: PredictionResponse
     rca: RCAEvidence
     human_readable_summary: str = Field(
@@ -149,6 +155,19 @@ class AnalyzeResponse(BaseModel):
         default=None,
         description="PNG bytes Base64 for matplotlib trio chart",
     )
+
+    # Frontend-centric fields (added for compatibility)
+    failure_probability_percent: float
+    anomaly_score: float
+    decision_priority: str
+    risk_category: str
+    health_score: float
+    parameter_diagnostics: List[Dict[str, Any]]
+    feature_importance: List[Dict[str, Any]]
+    trend_insights: List[Dict[str, Any]]
+    comparison_note: Optional[str] = None
+    engineering_report: Optional[str] = None
+    structured_analysis: Optional[Dict[str, Any]] = None
 
 
 class DecisionResponse(BaseModel):

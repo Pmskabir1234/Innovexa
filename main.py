@@ -73,6 +73,13 @@ app.include_router(router)
 app.include_router(stream_router)
 
 
+@app.get("/health")
+def health() -> dict:
+    """Lightweight readiness probe."""
+
+    return {"status": "ok"}
+
+
 import os
 from fastapi.staticfiles import StaticFiles
 
@@ -80,11 +87,4 @@ from fastapi.staticfiles import StaticFiles
 frontend_dist = os.path.join(os.path.dirname(__file__), "frontend", "dist")
 if os.path.exists(frontend_dist):
     app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
-
-
-@app.get("/health")
-def health() -> dict:
-    """Lightweight readiness probe."""
-
-    return {"status": "ok"}
 
