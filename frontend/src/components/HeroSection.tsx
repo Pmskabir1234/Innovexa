@@ -54,7 +54,7 @@ export default function HeroSection() {
         >
           <Link 
             to="/dashboard"
-            className="bg-primary text-primary-foreground px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-semibold rounded-sm cursor-pointer hover:brightness-110 active:scale-[0.97] transition-all duration-200 outline-none inline-block text-center"
+            className="bg-[#22c55e] text-black px-6 py-3 md:px-8 md:py-4 text-xs tracking-widest uppercase font-bold rounded-sm cursor-pointer hover:brightness-110 active:scale-[0.97] transition-all duration-200 outline-none inline-block text-center border-2 border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.3)]"
           >
             Demo
           </Link>
