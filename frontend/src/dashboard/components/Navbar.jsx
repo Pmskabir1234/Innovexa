@@ -155,8 +155,7 @@ export function Navbar({ theme, onToggleTheme, health, healthLoading, onOpenSide
             </button>
           </motion.div>
         </div>
-      </div>
-    </header>
+      </header>
 
 
   )
