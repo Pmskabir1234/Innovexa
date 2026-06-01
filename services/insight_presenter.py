@@ -178,6 +178,7 @@ def build_analyze_presentation(
     fp_bucket = _failure_bucket(fp)
     anomaly_note = preds.anomaly_flag
     iso_score = float(preds.anomaly_score)
+    conf_lbl = _confidence_band(fp, anomaly_note, iso_score)
 
     parameter_cards: List[Dict[str, Any]] = []
     last = df_enriched.iloc[-1]
@@ -218,25 +219,25 @@ def build_analyze_presentation(
 
     if anomaly_note and fp_pct == 0:
         headline = (
-            "**System status:** ⚠️ **Anomaly detected**, yet immediate failure risk looks **LOW** "
-            f"({fp_pct}% RF probability).\n\n"
+            "SYSTEM STATUS: Anomaly detected, yet immediate failure risk is LOW "
+            f"({fp_pct}% probability).\n\n"
             "The latest window deviates from learned healthy patterns, yet the supervised "
-            "risk head is not forecasting imminent failure—prioritize confirming sensors before tripping alarms."
+            "risk head is not forecasting imminent failure. Prioritize confirming sensors before tripping alarms."
         )
     elif anomaly_note:
         headline = (
-            f"**System status:** ⚠️ Multivariate anomaly with **{fp_bucket.upper()}** RF outlook ({fp_pct}%).\n\n"
+            f"SYSTEM STATUS: Multivariate anomaly with {fp_bucket.upper()} outlook ({fp_pct}%).\n\n"
             "Isolation Forest flagged joint deviations while the classifier sees measurable near-term risk."
         )
     elif fp_bucket in {"high", "elevated"}:
         headline = (
-            f"**System status:** 🔴 RF model indicates **{fp_bucket.upper()}** probability ({fp_pct}%) "
-            "without a hard isolation trip—review degradation trends."
+            f"SYSTEM STATUS: RF model indicates {fp_bucket.upper()} probability ({fp_pct}%) "
+            "without a hard isolation trip. Review degradation trends."
         )
     else:
         headline = (
-            "**System status:** ✅ Operational envelope looks stable "
-            f"(RF {fp_pct}%, {_confidence_band(fp, anomaly_note, iso_score)} interpretation confidence).\n\n"
+            f"SYSTEM STATUS: Operational envelope looks stable "
+            f"(RF {fp_pct}%, {conf_lbl} interpretation confidence).\n\n"
             "Continue periodic checks; no ML-triggered escalation on this slice."
         )
 
@@ -252,22 +253,22 @@ def build_analyze_presentation(
 
     abnormal_channels = [p["label"] for p in parameter_cards if p["status"] != "normal"]
     obs_lines = [
-        f"- Isolation Forest anomaly flag: **{'YES' if anomaly_note else 'NO'}** (score {iso_score:.3f}).",
-        f"- RF failure outlook: **{fp_pct}%** ({fp_bucket}).",
+        f"• Isolation Forest anomaly flag: {'YES' if anomaly_note else 'NO'} (score {iso_score:.3f})",
+        f"• RF failure outlook: {fp_pct}% ({fp_bucket})",
     ]
     if abnormal_channels:
-        obs_lines.append(f"- Channels outside nominal band: **{', '.join(abnormal_channels)}**.")
+        obs_lines.append(f"• Channels outside nominal band: {', '.join(abnormal_channels)}")
     else:
-        obs_lines.append("- Process channels in the expanded table remain inside nominal bands on the latest sample.")
+        obs_lines.append("• Process channels in the expanded table remain inside nominal bands on the latest sample.")
 
     corr_lines: List[str] = []
     for a, b, score in rca.correlated_pairs[:3]:
         corr_lines.append(
-            f"- **{a}** <-> **{b}** correlation ~ **{score:.2f}**: "
-            f"{'strong shared driver' if score >= 0.75 else 'moderate coupling'} worth validating physically."
+            f"• {a} <-> {b} correlation ~ {score:.2f}: "
+            f"{'Strong shared driver' if score >= 0.75 else 'Moderate coupling'} worth validating physically."
         )
     if not corr_lines:
-        corr_lines.append("- Correlations are muted in this window; focus on absolute thresholds and trends.")
+        corr_lines.append("• Correlations are muted in this window; focus on absolute thresholds and trends.")
 
     actions: List[str] = []
     if critical_ct:
@@ -283,45 +284,44 @@ def build_analyze_presentation(
     if not actions:
         actions.append("Maintain current monitoring plan; store this baseline for future similarity search.")
 
-    conf_lbl = _confidence_band(fp, anomaly_note, iso_score)
     risk_txt = _risk_impact_text(alert)
 
     system_summary = (
-        "#### System Summary\n"
-        f"{headline}\n"
-        f"- **Composite alert severity:** **{alert.upper()}**\n"
-        f"- **Telemetry window:** {duration_hint}\n"
+        "EXECUTIVE SUMMARY\n"
+        f"{headline}\n\n"
+        f"COMPOSITE ALERT SEVERITY: {alert.upper()}\n"
+        f"TELEMETRY WINDOW: {duration_hint}\n"
     )
-    key_obs = "#### Key observations\n" + "\n".join(obs_lines)
+    key_obs = "KEY OBSERVATIONS\n" + "\n".join(obs_lines)
     if trend_bits:
-        key_obs += "\n\n**Trend detection**\n" + "\n".join(f"- {t}" for t in trend_bits)
+        key_obs += "\n\nTREND DETECTION\n" + "\n".join(f"• {t}" for t in trend_bits)
 
     root_cause = (
-        "#### Root cause insight\n"
-        f"- **Hypothesis:** {rca.primary_hypothesis}\n"
-        f"- **RCA confidence:** {rca.confidence:.0%}\n"
+        "ROOT CAUSE INSIGHT\n"
+        f"• Hypothesis: {rca.primary_hypothesis}\n"
+        f"• RCA confidence: {rca.confidence:.0%}\n"
         + "\n".join(corr_lines)
     )
 
-    reco = "#### Recommended actions\n" + "\n".join(f"{i + 1}. {line}" for i, line in enumerate(actions[:6]))
+    reco = "RECOMMENDED ACTIONS\n" + "\n".join(f"{i + 1}. {line}" for i, line in enumerate(actions[:6]))
 
     conf_risk = (
-        "#### Confidence and risk\n"
-        f"- **Interpretation confidence:** **{conf_lbl}** (agreement between isolation and RF heads).\n"
-        f"- **Risk impact:** {risk_txt}\n"
-        f"- **Alert severity:** **{alert.upper()}**\n"
+        "CONFIDENCE AND RISK\n"
+        f"• Interpretation confidence: {conf_lbl} (agreement between isolation and RF heads)\n"
+        f"• Risk impact: {risk_txt}\n"
+        f"• Alert severity: {alert.upper()}\n"
     )
 
     ranked = _rank_influencing_factors(explain_body)
-    ranked_md = "#### Ranked influencing factors\n"
+    ranked_md = "RANKED INFLUENCING FACTORS\n"
     ranked_md += "\n".join(
-        f"{i + 1}. **{r['feature']}** — {r['impact_tier']} ({r['source']})\n   _{r['detail']}_"
+        f"{i + 1}. {r['feature']} - {r['impact_tier']} ({r['source']})\n   Detail: {r['detail']}"
         for i, r in enumerate(ranked)
     )
 
     why = (
-        "#### Why this readout?\n"
-        "Models fused **window statistics** (means/std/last values) per sensor: isolation highlights "
+        "DECISION RATIONALE\n"
+        "Models fused window statistics (means/std/last values) per sensor. Isolation highlights "
         "multivariate density outliers while RF estimates proximate failure likelihood using historical labels. "
         "RCA rules surface dominant correlations for mechanics."
     )
@@ -332,7 +332,7 @@ def build_analyze_presentation(
     chart_b64 = build_analyze_chart_png_base64(df_enriched, highlights)
 
     human_readable = "\n\n".join(
-        [system_summary, key_obs, root_cause, reco, conf_risk, ranked_md, why, f"#### Memory\n{memory}"]
+        [system_summary, key_obs, root_cause, reco, conf_risk, ranked_md, why, f"ENGINEERING MEMORY\n{memory}"]
     )
 
     return {
@@ -368,14 +368,14 @@ def build_what_if_narrative(payload: Dict[str, Any]) -> str:
     s_risk = str(scen.get("risk_level", "unknown")).upper()
 
     parts = [
-        "**What-if summary**",
-        ", ".join(f"{k} {float(v):+.3g}" for k, v in deltas.items()),
-        f"- Failure probability moves **{b_fp}%** → **{s_fp}%**.",
-        f"- Risk tier moves **{b_risk}** → **{s_risk}**.",
-        f"- Recommended posture: **{scen.get('action', 'n/a')}**",
+        "WHAT-IF SIMULATION SUMMARY",
+        "Applied Changes: " + ", ".join(f"{k} {float(v):+.3g}" for k, v in deltas.items()),
+        f"• Failure probability shift: {b_fp}% -> {s_fp}%",
+        f"• Risk tier transition: {b_risk} -> {s_risk}",
+        f"• Recommended posture: {scen.get('action', 'n/a')}",
     ]
     if s_fp > b_fp + 10:
-        parts.append("- Elevated RF swing warrants urgent inspection if the perturbation is realistic.")
+        parts.append("• NOTICE: Significant increase in failure probability warrants urgent review.")
     elif s_risk != b_risk and s_risk in {"MEDIUM", "HIGH"}:
-        parts.append("- Tier escalation implies tightening monitoring cadence until cleared.")
+        parts.append("• NOTICE: Risk tier escalation implies tightening monitoring cadence.")
     return "\n".join(parts)
