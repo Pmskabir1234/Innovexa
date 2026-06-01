@@ -24,22 +24,24 @@ const TABS = [
 ]
 
 function SkeletonCard({ h = 'h-32' }) {
-  return <div className={clsx('skeleton rounded-2xl', h)} />
+  return <div className={clsx('bg-white/[0.03] animate-pulse rounded-2xl border border-white/[0.05]', h)} />
 }
 
 function LoadingState({ message }) {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3 px-1">
-        <Spinner size="sm" />
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{message}</span>
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="flex items-center gap-4 px-1">
+        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">{message}</span>
       </div>
-      <SkeletonCard h="h-16" />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[...Array(4)].map((_, i) => <SkeletonCard key={i} h="h-24" />)}
+      <div className="space-y-4">
+        <SkeletonCard h="h-24" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => <SkeletonCard key={i} h="h-32" />)}
+        </div>
+        <SkeletonCard h="h-80" />
+        <SkeletonCard h="h-64" />
       </div>
-      <SkeletonCard h="h-64" />
-      <SkeletonCard h="h-48" />
     </div>
   )
 }
@@ -47,39 +49,41 @@ function LoadingState({ message }) {
 function EmptyState({ icon: Icon, title, description, action, actionLabel, loading, accent = 'var(--color-primary)' }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="card-elevated p-16 flex flex-col items-center gap-5 text-center"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="card-elevated p-12 md:p-20 flex flex-col items-center gap-8 text-center max-w-2xl mx-auto relative overflow-hidden"
     >
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+      
       <motion.div
         className="relative"
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl relative z-10"
           style={{
-            background: `color-mix(in srgb, ${accent}, transparent 90%)`,
-            border: `1px solid color-mix(in srgb, ${accent}, transparent 80%)`,
-            boxShadow: `0 0 30px color-mix(in srgb, ${accent}, transparent 85%)`,
+            background: `linear-gradient(135deg, ${accent}30, ${accent}10)`,
+            border: `1px solid ${accent}40`,
+            boxShadow: `0 0 40px ${accent}20`,
           }}
         >
-          <Icon size={26} style={{ color: accent }} />
+          <Icon size={32} style={{ color: accent }} />
         </div>
         <div
-          className="absolute inset-0 rounded-2xl animate-ping"
-          style={{ background: `color-mix(in srgb, ${accent}, transparent 92%)`, animationDuration: '3s' }}
+          className="absolute inset-0 rounded-3xl animate-ping opacity-20"
+          style={{ background: accent, animationDuration: '3s' }}
         />
       </motion.div>
 
-      <div>
-        <h3 className="font-semibold text-sm mb-1.5 text-[var(--text-secondary)]">{title}</h3>
-        <p className="text-xs leading-relaxed max-w-xs text-[var(--text-muted)]">{description}</p>
+      <div className="space-y-3 relative z-10">
+        <h3 className="font-bold text-xl md:text-2xl tracking-tight text-[var(--text-primary)]">{title}</h3>
+        <p className="text-sm md:text-base leading-relaxed text-[var(--text-muted)] max-w-sm mx-auto font-light">{description}</p>
       </div>
 
-      <button onClick={action} disabled={loading} className="btn-primary">
-        {loading ? <Spinner size="sm" /> : <ChevronRight size={13} />}
+      <button onClick={action} disabled={loading} className="btn-primary relative z-10 min-w-[160px] justify-center">
+        {loading ? <Spinner size="sm" /> : <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />}
         {actionLabel}
       </button>
     </motion.div>
@@ -147,11 +151,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)]">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)] selection:bg-primary/20 selection:text-primary transition-colors duration-500">
+      {/* Premium Atmosphere Background */}
+      <div className="atmosphere" />
+      
+      {/* Interactive Global Glow */}
       <div
-        className="fixed inset-0 pointer-events-none"
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
         style={{
-          background: 'radial-gradient(ellipse 80% 50% at 50% -20%, var(--color-primary-dim) 0%, transparent 60%)',
+          background: 'radial-gradient(circle at 50% -10%, var(--color-primary-dim) 0%, transparent 50%)',
         }}
       />
 
@@ -163,7 +171,7 @@ export default function App() {
         onOpenSidebar={() => setSidebarOpen(true)}
       />
 
-      <div className="layout-root">
+      <div className="layout-root relative z-10">
         <Sidebar
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -180,29 +188,36 @@ export default function App() {
         />
 
         <main className="content-area">
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-8 max-w-6xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <TabBar
                 tabs={TABS}
                 activeTab={activeTab}
                 hasData={hasData}
                 onTabChange={setActiveTab}
               />
-              {anyLoading && (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--border-subtle)] animate-pulse">
-                  <Spinner size="sm" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Processing</span>
-                </div>
-              )}
+              <AnimatePresence>
+                {anyLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex items-center gap-3 px-4 py-2 rounded-full glass-panel"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">AI Engine Active</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 {activeTab === 'analyze' && (
                   analyzeApi.loading ? (
@@ -212,10 +227,10 @@ export default function App() {
                   ) : (
                     <EmptyState
                       icon={Activity}
-                      title="No analysis yet"
-                      description="Configure your machine parameters in the sidebar and click Run Full Analysis."
+                      title="No Analysis Data"
+                      description="Configure your machine parameters in the sidebar and trigger the AI analysis engine."
                       action={handleAnalyze}
-                      actionLabel="Run Analysis"
+                      actionLabel="Initiate Analysis"
                       loading={analyzeApi.loading}
                       accent="hsl(119,99%,46%)"
                     />
@@ -230,8 +245,8 @@ export default function App() {
                   ) : (
                     <EmptyState
                       icon={Zap}
-                      title="No prediction yet"
-                      description="Click Quick Predict for a fast failure probability estimate."
+                      title="Predict Failure Risk"
+                      description="Use our predictive models to estimate the probability of system failure."
                       action={handlePredict}
                       actionLabel="Quick Predict"
                       loading={predictApi.loading}
@@ -252,7 +267,7 @@ export default function App() {
 
                 {activeTab === 'history' && (
                   historyApi.loading ? (
-                    <LoadingState message="Loading history…" />
+                    <LoadingState message="Loading historical data…" />
                   ) : (
                     <HistoryPanel items={historyApi.data?.items} />
                   )
@@ -272,4 +287,5 @@ export default function App() {
     </div>
   )
 }
+
 

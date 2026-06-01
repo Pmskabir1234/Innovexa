@@ -38,26 +38,30 @@ const TREND_CFG = {
 /* ── sub-components ── */
 function SectionHeader({ icon: Icon, title, accent = 'var(--color-primary)' }) {
   return (
-    <div className="flex items-center gap-2.5 mb-4">
+    <div className="flex items-center gap-3 mb-6 group">
       <div
-        className="w-6 h-6 rounded-lg flex items-center justify-center"
-        style={{ background: `color-mix(in srgb, ${accent}, transparent 85%)` }}
+        className="w-8 h-8 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300"
+        style={{ 
+          background: `linear-gradient(135deg, ${accent}30, ${accent}10)`,
+          border: `1px solid ${accent}40`,
+          boxShadow: `0 0 20px ${accent}15`
+        }}
       >
-        <Icon size={12} style={{ color: accent }} />
+        <Icon size={14} style={{ color: accent }} />
       </div>
-      <span className="section-title" style={{ color: 'var(--text-muted)' }}>{title}</span>
-      <div className="flex-1 h-px" style={{ background: 'var(--border-subtle)' }} />
+      <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>{title}</span>
+      <div className="flex-1 h-px bg-gradient-to-r from-white/[0.1] to-transparent ml-2" />
     </div>
   )
 }
 
 function DiagnosticsGrid({ diagnostics }) {
   if (!diagnostics?.length) return (
-    <p className="text-sm" style={{ color: 'var(--text-faint)' }}>No diagnostics available.</p>
+    <p className="text-sm font-light italic" style={{ color: 'var(--text-faint)' }}>No diagnostics available for this period.</p>
   )
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {diagnostics.map((d, i) => {
         const pct = Math.min(100, Math.abs(d.deviation_percent || 0))
         const cfg = STATUS_CFG[d.status] || STATUS_CFG.Normal
@@ -65,25 +69,25 @@ function DiagnosticsGrid({ diagnostics }) {
         return (
           <motion.div
             key={d.parameter}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.04, duration: 0.3 }}
-            className="rounded-xl p-3 space-y-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-2xl p-4 space-y-3 glass-panel hover:bg-white/[0.04] transition-colors"
             style={{
-              background: cfg.bg,
-              border: `1px solid ${cfg.border}`,
+              borderColor: `${cfg.bar}30`,
+              boxShadow: pct > 80 ? `0 0 20px ${cfg.bar}10` : 'none'
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+              <span className="text-xs font-bold tracking-tight uppercase" style={{ color: 'var(--text-secondary)' }}>
                 {d.parameter}
               </span>
               <span
-                className="badge"
+                className="badge !px-2 !py-0.5"
                 style={{
-                  background: `${cfg.bar}20`,
+                  background: `${cfg.bar}15`,
                   color: cfg.text,
-                  border: `1px solid ${cfg.bar}30`,
+                  border: `1px solid ${cfg.bar}25`,
                 }}
               >
                 {d.status}
@@ -91,31 +95,34 @@ function DiagnosticsGrid({ diagnostics }) {
             </div>
 
             {/* Progress bar */}
-            <div
-              className="h-1 rounded-full overflow-hidden"
-              style={{ background: 'var(--border-subtle)' }}
-            >
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: cfg.bar, boxShadow: `0 0 6px ${cfg.bar}60` }}
-                initial={{ width: 0 }}
-                animate={{ width: `${pct}%` }}
-                transition={{ duration: 0.8, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-[11px]" style={{ color: 'var(--text-faint)' }}>
-                {d.actual_value?.toFixed(2)} (safe: {d.safe_min}–{d.safe_max})
-              </span>
-              <span className="text-[11px] font-mono" style={{ color: cfg.text }}>
-                {pct.toFixed(1)}%
-              </span>
+            <div className="space-y-1.5">
+              <div
+                className="h-1.5 rounded-full overflow-hidden bg-white/[0.05]"
+              >
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ 
+                    background: `linear-gradient(90deg, ${cfg.bar}80, ${cfg.bar})`, 
+                    boxShadow: `0 0 10px ${cfg.bar}40` 
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 1, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-medium" style={{ color: 'var(--text-faint)' }}>
+                  {d.actual_value?.toFixed(2)} <span className="opacity-40">vs</span> {d.safe_max}
+                </span>
+                <span className="text-[10px] font-black font-mono tracking-wider" style={{ color: cfg.text }}>
+                  {pct.toFixed(1)}% DEVIATION
+                </span>
+              </div>
             </div>
 
             {d.explanation && (
-              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                {d.explanation}
+              <p className="text-[11px] leading-relaxed font-light italic border-t border-white/[0.03] pt-2" style={{ color: 'var(--text-muted)' }}>
+                "{d.explanation}"
               </p>
             )}
           </motion.div>
@@ -127,58 +134,62 @@ function DiagnosticsGrid({ diagnostics }) {
 
 function FeatureImportanceChart({ importance }) {
   if (!importance?.length) return (
-    <p className="text-sm" style={{ color: 'var(--text-faint)' }}>Not available.</p>
+    <p className="text-sm italic font-light" style={{ color: 'var(--text-faint)' }}>Feature analysis not available.</p>
   )
 
   const data = importance.slice(0, 8).map((f) => ({
-    name: f.feature || f.name || 'Unknown',
+    name: (f.feature || f.name || 'Unknown').toUpperCase(),
     value: parseFloat((f.importance || f.value || 0).toFixed(4)),
   }))
 
   const BAR_COLORS = [
-    'var(--color-primary)', 'hsl(119,99%,40%)', 'hsl(119,99%,35%)', 'hsl(119,99%,30%)',
-    'hsl(119,99%,50%)', 'hsl(119,99%,60%)', 'hsl(119,99%,70%)', 'hsl(119,99%,80%)',
+    '#22c55e', '#16a34a', '#15803d', '#166534',
+    '#4ade80', '#86efac', '#bbf7d0', '#dcfce7',
   ]
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} layout="vertical" margin={{ left: 4, right: 20, top: 4, bottom: 4 }}>
-        <XAxis
-          type="number"
-          tick={{ fontSize: 10, fill: 'var(--text-faint)' }}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          type="category"
-          dataKey="name"
-          tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
-          width={140}
-          tickLine={false}
-          axisLine={false}
-        />
-        <Tooltip
-          cursor={{ fill: 'var(--border-subtle)' }}
-          contentStyle={{
-            background: 'var(--surface-elevated)',
-            border: '1px solid var(--border-accent)',
-            borderRadius: '0.75rem',
-            fontSize: 12,
-            color: 'var(--text-secondary)',
-          }}
-          formatter={(v) => [v.toFixed(4), 'Importance']}
-        />
-        <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-          {data.map((_, i) => (
-            <Cell
-              key={i}
-              fill={BAR_COLORS[i % BAR_COLORS.length]}
-              style={{ filter: `drop-shadow(0 0 4px color-mix(in srgb, ${BAR_COLORS[i % BAR_COLORS.length]}, transparent 60%))` }}
-            />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="h-[250px] w-full pt-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ left: 10, right: 30, top: 0, bottom: 0 }}>
+          <XAxis
+            type="number"
+            tick={{ fontSize: 9, fill: 'var(--text-faint)', fontWeight: 700 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={{ fontSize: 9, fill: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}
+            width={120}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+            contentStyle={{
+              background: 'rgba(15, 23, 42, 0.9)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '1rem',
+              fontSize: 10,
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)'
+            }}
+            itemStyle={{ fontWeight: 700, textTransform: 'uppercase' }}
+            formatter={(v) => [v.toFixed(4), 'WEIGHT']}
+          />
+          <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={12}>
+            {data.map((_, i) => (
+              <Cell
+                key={i}
+                fill={BAR_COLORS[i % BAR_COLORS.length]}
+                style={{ filter: `drop-shadow(0 0 5px ${BAR_COLORS[i % BAR_COLORS.length]}40)` }}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
 
@@ -188,30 +199,29 @@ function TrendInsightRow({ t, i }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -8 }}
+      initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: i * 0.05, duration: 0.3 }}
-      className="flex items-start gap-3 p-3 rounded-xl transition-colors"
-      style={{ background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}
-      whileHover={{ background: 'var(--border-subtle)' }}
+      transition={{ delay: i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="flex items-start gap-4 p-4 rounded-2xl transition-all duration-300 group glass-panel border-white/[0.03]"
+      whileHover={{ scale: 1.01, background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
     >
       <div
-        className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-        style={{ background: `${cfg.color}15` }}
+        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 group-hover:rotate-6 transition-transform"
+        style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}20` }}
       >
-        <Icon size={12} style={{ color: cfg.color }} />
+        <Icon size={16} style={{ color: cfg.color }} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{t.metric}</span>
+        <div className="flex items-center gap-3 mb-1 flex-wrap">
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>{t.metric}</span>
           <span
-            className="badge"
-            style={{ background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}25` }}
+            className="badge !text-[9px] !px-2 !py-0.5"
+            style={{ background: `${cfg.color}10`, color: cfg.color, border: `1px solid ${cfg.color}20` }}
           >
-            {cfg.label}
+            {cfg.label.toUpperCase()}
           </span>
         </div>
-        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{t.detail}</p>
+        <p className="text-xs leading-relaxed font-light" style={{ color: 'var(--text-muted)' }}>{t.detail}</p>
       </div>
     </motion.div>
   )
@@ -241,129 +251,133 @@ export function AnalysisResult({ data }) {
 
   return (
     <motion.div
-      className="space-y-4"
+      className="space-y-6"
       variants={stagger.container}
       initial="initial"
       animate="animate"
     >
       {/* Status banner */}
-      <motion.div variants={stagger.item}>
+      <motion.div variants={stagger.item} className="mb-2">
         <StatusBanner risk={risk_category} priority={decision_priority} />
       </motion.div>
 
       {/* Top metrics row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          label="Failure Probability"
-          value={`${failure_probability_percent?.toFixed(2)}%`}
+          label="FAILURE RISK"
+          value={`${failure_probability_percent?.toFixed(1)}%`}
           icon={AlertTriangle}
           accent="orange"
-          delay={0.05}
-        />
-        <MetricCard
-          label="Anomaly Score"
-          value={anomaly_score?.toFixed(3)}
-          icon={Activity}
-          accent="cyan"
           delay={0.1}
         />
         <MetricCard
-          label="Decision Priority"
-          value={decision_priority}
-          icon={Zap}
-          accent="amber"
+          label="ANOMALY SCORE"
+          value={anomaly_score?.toFixed(3)}
+          icon={Activity}
+          accent="cyan"
           delay={0.15}
         />
         <MetricCard
-          label="Risk Category"
-          value={risk_category}
+          label="PRIORITY"
+          value={decision_priority.toUpperCase()}
+          icon={Zap}
+          accent="amber"
+          delay={0.2}
+        />
+        <MetricCard
+          label="RISK LEVEL"
+          value={risk_category.toUpperCase()}
           icon={BarChart2}
           accent={risk_category === 'Critical' ? 'red' : risk_category === 'High' ? 'orange' : risk_category === 'Medium' ? 'amber' : 'green'}
-          delay={0.2}
+          delay={0.25}
         />
       </div>
 
       {/* Gauges */}
-      <motion.div variants={stagger.item} className="card-elevated p-6">
-        <SectionHeader icon={Activity} title="System Health & Risk Gauges" />
-        <div className="grid grid-cols-2 gap-6">
+      <motion.div variants={stagger.item} className="card-elevated p-8 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none" />
+        <SectionHeader icon={Activity} title="Predictive Health Indices" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-4">
           <div className="flex flex-col items-center">
-            <GaugeChart value={health_score} title="Health Score" size={180} variant="health" />
+            <GaugeChart value={health_score} title="System Health Index" size={200} variant="health" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/40 mt-4">Real-time Stability</p>
           </div>
           <div className="flex flex-col items-center">
-            <GaugeChart value={failure_probability_percent} title="Failure Risk %" size={180} variant="risk" />
+            <GaugeChart value={failure_probability_percent} title="Failure Probability" size={200} variant="risk" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500/40 mt-4">Risk Estimation</p>
           </div>
         </div>
       </motion.div>
 
-      {/* Diagnostics */}
-      <motion.div variants={stagger.item} className="card p-5">
-        <SectionHeader icon={Activity} title="Parameter Diagnostics" accent="var(--color-primary)" />
-        <DiagnosticsGrid diagnostics={parameter_diagnostics} />
-      </motion.div>
-
-      {/* Feature importance */}
-      <motion.div variants={stagger.item} className="card p-5">
-        <SectionHeader icon={BarChart2} title="Feature Importance" accent="#c084fc" />
-        <FeatureImportanceChart importance={feature_importance} />
-      </motion.div>
-
-      {/* Trend insights */}
-      {trend_insights?.length > 0 && (
-        <motion.div variants={stagger.item} className="card p-5">
-          <SectionHeader icon={TrendingUp} title="Trend Insights" accent="#fbbf24" />
-          <div className="space-y-2">
-            {trend_insights.map((t, i) => (
-              <TrendInsightRow key={i} t={t} i={i} />
-            ))}
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Diagnostics */}
+        <motion.div variants={stagger.item} className="card p-6">
+          <SectionHeader icon={Activity} title="Parameter Diagnostics" accent="var(--color-primary)" />
+          <DiagnosticsGrid diagnostics={parameter_diagnostics} />
         </motion.div>
-      )}
+
+        <div className="space-y-6">
+          {/* Feature importance */}
+          <motion.div variants={stagger.item} className="card p-6">
+            <SectionHeader icon={BarChart2} title="Neural Network Weights" accent="#c084fc" />
+            <FeatureImportanceChart importance={feature_importance} />
+          </motion.div>
+
+          {/* Trend insights */}
+          {trend_insights?.length > 0 && (
+            <motion.div variants={stagger.item} className="card p-6">
+              <SectionHeader icon={TrendingUp} title="Time-Series Insights" accent="#fbbf24" />
+              <div className="space-y-3">
+                {trend_insights.map((t, i) => (
+                  <TrendInsightRow key={i} t={t} i={i} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </div>
 
       {/* Comparison note */}
       {comparison_note && (
         <motion.div
           variants={stagger.item}
-          className="rounded-xl p-4 flex items-start gap-3"
-          style={{
-            background: 'var(--color-primary-dim)',
-            border: '1px solid var(--color-primary-border)',
-            borderLeft: '3px solid var(--color-primary)',
-          }}
+          className="rounded-2xl p-6 flex items-start gap-5 glass-panel border-primary/20 bg-primary/[0.03] relative overflow-hidden group"
         >
-          <Clock size={14} className="mt-0.5 shrink-0" style={{ color: 'var(--color-primary)' }} />
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{comparison_note}</p>
+          <div className="absolute inset-y-0 left-0 w-1 bg-primary group-hover:w-1.5 transition-all" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <Clock size={18} className="text-primary" />
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">Historical Context</span>
+            <p className="text-sm leading-relaxed font-medium text-[var(--text-secondary)]">{comparison_note}</p>
+          </div>
         </motion.div>
       )}
 
       {/* Visualizations */}
       {visuals.length > 0 && (
-        <motion.div variants={stagger.item} className="card p-5">
-          <SectionHeader icon={BarChart2} title="Generated Visualizations" accent="var(--color-primary)" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <motion.div variants={stagger.item} className="card p-6">
+          <SectionHeader icon={BarChart2} title="AI-Generated Visualizations" accent="var(--color-primary)" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {visuals.slice(0, 3).map((v, i) => (
               <motion.div
                 key={i}
-                className="rounded-xl overflow-hidden"
-                style={{ border: '1px solid var(--border-subtle)' }}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.2 }}
+                className="rounded-2xl overflow-hidden glass-panel border-white/[0.05] group cursor-zoom-in"
+                whileHover={{ scale: 1.02, borderColor: 'var(--color-primary-border)' }}
+                transition={{ duration: 0.3 }}
               >
                 <div
-                  className="px-3 py-2 text-[11px] font-medium"
-                  style={{
-                    background: 'var(--input-bg)',
-                    borderBottom: '1px solid var(--border-subtle)',
-                    color: 'var(--text-muted)',
-                  }}
+                  className="px-4 py-2 text-[9px] font-black uppercase tracking-widest border-b border-white/[0.05] bg-white/[0.02] text-[var(--text-muted)] group-hover:text-primary transition-colors"
                 >
-                  {v.title || v.metric || `Chart ${i + 1}`}
+                  {v.title || v.metric || `Sensor Stream ${i + 1}`}
                 </div>
-                <img
-                  src={`data:image/png;base64,${v.image_base64}`}
-                  alt={v.title || 'Visualization'}
-                  className="w-full"
-                />
+                <div className="p-1">
+                  <img
+                    src={`data:image/png;base64,${v.image_base64}`}
+                    alt={v.title || 'Visualization'}
+                    className="w-full h-auto rounded-xl grayscale-[40%] group-hover:grayscale-0 transition-all duration-500"
+                  />
+                </div>
               </motion.div>
             ))}
           </div>
@@ -371,24 +385,27 @@ export function AnalysisResult({ data }) {
       )}
 
       {/* Engineering report */}
-      <motion.div variants={stagger.item} className="card p-5">
-        <SectionHeader icon={Brain} title="AI Engineering Report" accent="#c084fc" />
+      <motion.div variants={stagger.item} className="card-elevated p-8 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          <Brain size={120} />
+        </div>
+        <SectionHeader icon={Brain} title="AI Executive Summary" accent="#c084fc" />
         <div
-          className="text-sm leading-relaxed whitespace-pre-wrap"
+          className="text-sm leading-relaxed whitespace-pre-wrap font-light first-letter:text-3xl first-letter:font-bold first-letter:text-primary first-letter:mr-1 first-letter:float-left"
           style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)' }}
         >
-          {engineering_report || 'No report available.'}
+          {engineering_report || 'No qualitative report generated.'}
         </div>
       </motion.div>
 
       {/* Expandable sections */}
-      <motion.div variants={stagger.item} className="space-y-2">
+      <motion.div variants={stagger.item} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {rootCause.length > 0 && (
-          <Accordion title="Root Cause Analysis">
-            <ul className="space-y-2 pt-1">
+          <Accordion title="Neural Root Cause Analysis" icon={Brain}>
+            <ul className="space-y-3 p-4">
               {rootCause.map((line, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--color-primary)' }} />
+                <li key={i} className="flex items-start gap-3 text-xs font-light leading-relaxed group" style={{ color: 'var(--text-secondary)' }}>
+                  <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-primary/40 group-hover:bg-primary transition-colors" />
                   {line}
                 </li>
               ))}
@@ -396,11 +413,11 @@ export function AnalysisResult({ data }) {
           </Accordion>
         )}
         {historicalComparison.length > 0 && (
-          <Accordion title="Historical Comparison">
-            <ul className="space-y-2 pt-1">
+          <Accordion title="Peer Asset Comparison" icon={Clock}>
+            <ul className="space-y-3 p-4">
               {historicalComparison.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                  <span className="mt-1 w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--color-primary)' }} />
+                <li key={i} className="flex items-start gap-3 text-xs font-light leading-relaxed group" style={{ color: 'var(--text-secondary)' }}>
+                  <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-amber-500/40 group-hover:bg-amber-500 transition-colors" />
                   {item.detail || JSON.stringify(item)}
                 </li>
               ))}

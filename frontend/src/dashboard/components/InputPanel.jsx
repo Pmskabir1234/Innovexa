@@ -62,27 +62,33 @@ function GroupSection({ group, params, onChange }) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden"
-      style={{ border: '1px solid var(--border-subtle)', background: 'var(--surface)' }}
+      className="rounded-2xl overflow-hidden transition-all duration-300"
+      style={{ 
+        border: open ? '1px solid var(--border-accent)' : '1px solid var(--border-subtle)', 
+        background: open ? 'rgba(255,255,255,0.02)' : 'transparent' 
+      }}
     >
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.02]"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04] group"
       >
         <div
-          className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
-          style={{ background: `${group.accent}15` }}
+          className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+          style={{ 
+            background: open ? `${group.accent}20` : 'rgba(255,255,255,0.05)',
+            boxShadow: open ? `0 0 15px ${group.accent}15` : 'none'
+          }}
         >
-          <Icon size={11} style={{ color: group.accent }} />
+          <Icon size={14} style={{ color: open ? group.accent : 'var(--text-muted)' }} />
         </div>
         <span
-          className="text-[11px] font-semibold tracking-wider uppercase flex-1"
-          style={{ color: 'var(--text-muted)' }}
+          className="text-[10px] font-black tracking-[0.15em] uppercase flex-1"
+          style={{ color: open ? 'var(--text-primary)' : 'var(--text-muted)' }}
         >
           {group.label}
         </span>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={12} style={{ color: 'var(--text-faint)' }} />
+        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
+          <ChevronDown size={14} style={{ color: 'var(--text-faint)' }} />
         </motion.div>
       </button>
 
@@ -93,29 +99,30 @@ function GroupSection({ group, params, onChange }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             style={{ overflow: 'hidden' }}
           >
             <div
-              className="px-3 pb-3 pt-1 space-y-2.5"
+              className="px-4 pb-5 pt-2 space-y-4"
               style={{ borderTop: '1px solid var(--border-subtle)' }}
             >
               {group.fields.map((f) => (
-                <div key={f.key}>
-                  <label
-                    className="label"
-                    htmlFor={f.key}
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    {f.label}
-                    <span className="ml-1 normal-case font-normal" style={{ color: 'var(--text-faint)' }}>
-                      ({f.unit})
+                <div key={f.key} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label
+                      className="label !mb-0"
+                      htmlFor={f.key}
+                    >
+                      {f.label}
+                    </label>
+                    <span className="text-[10px] font-bold text-primary/60 font-mono">
+                      {params[f.key]} {f.unit}
                     </span>
-                  </label>
+                  </div>
                   <input
                     id={f.key}
                     type="number"
-                    className="input-field"
+                    className="input-field !py-2 !px-3 font-mono text-xs focus:ring-1 focus:ring-primary/30"
                     value={params[f.key]}
                     min={f.min}
                     max={f.max}
@@ -142,24 +149,29 @@ export function InputPanel({ params, onParamsChange, machineId, onMachineIdChang
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-5">
       {/* Machine ID */}
-      <div>
-        <label className="label" htmlFor="machine-id" style={{ color: 'var(--text-muted)' }}>Machine ID</label>
-        <input
-          id="machine-id"
-          type="text"
-          className="input-field font-mono"
-          value={machineId}
-          onChange={(e) => onMachineIdChange(e.target.value)}
-          placeholder="e.g. MOTOR-LINE-07"
-        />
+      <div className="space-y-2">
+        <label className="label" htmlFor="machine-id">System Identifier</label>
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary/40 group-focus-within:text-primary transition-colors">
+            <Cpu size={14} />
+          </div>
+          <input
+            id="machine-id"
+            type="text"
+            className="input-field font-mono !pl-10 !py-2.5 tracking-wider uppercase"
+            value={machineId}
+            onChange={(e) => onMachineIdChange(e.target.value)}
+            placeholder="MOTOR-LINE-07"
+          />
+        </div>
       </div>
 
-      <div className="divider" />
+      <div className="divider opacity-30" />
 
       {/* Parameter groups */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {PARAM_GROUPS.map((g) => (
           <GroupSection key={g.label} group={g} params={params} onChange={handleChange} />
         ))}
@@ -167,11 +179,11 @@ export function InputPanel({ params, onParamsChange, machineId, onMachineIdChang
 
       <button
         onClick={handleReset}
-        className="btn-ghost w-full justify-center gap-1.5 text-[11px]"
+        className="btn-ghost w-full justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] hover:bg-white/[0.03]"
         style={{ color: 'var(--text-faint)' }}
       >
-        <RotateCcw size={11} />
-        Reset to defaults
+        <RotateCcw size={12} />
+        Reset to Baseline
       </button>
     </div>
   )
